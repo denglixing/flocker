@@ -58,6 +58,9 @@ DEFAULT_DATASET_SIZE = RACKSPACE_MINIMUM_VOLUME_SIZE
 # The metadata key for flocker profiles.
 PROFILE_METADATA_KEY = u"clusterhq:flocker:profile"
 
+# Copy from some dataset
+FROM_KEY = u"clusterhq:flocker:from"
+
 
 class DatasetStates(Names):
     """
@@ -861,6 +864,7 @@ class CreateBlockDeviceDataset(PClass):
         """
         api = deployer.block_device_api
         profile_name = self.metadata.get(PROFILE_METADATA_KEY)
+        from_name = self.metadata.get(FROM_KEY)
         size = allocated_size(allocation_unit=api.allocation_unit(),
                               requested_size=self.maximum_size)
         if profile_name:
@@ -872,7 +876,7 @@ class CreateBlockDeviceDataset(PClass):
                 )
             )
         else:
-            return api.create_volume(dataset_id=self.dataset_id, size=size)
+            return api.create_volume(dataset_id=self.dataset_id, size=size,from_name=from_name)
 
     def run(self, deployer, state_persister):
         """
@@ -967,7 +971,7 @@ class IBlockDeviceAsyncAPI(Interface):
             determine the identifier.
         """
 
-    def create_volume(dataset_id, size):
+    def create_volume(dataset_id, size,from_name):
         """
         See ``IBlockDeviceAPI.create_volume``.
 
@@ -1299,7 +1303,7 @@ class ProfiledBlockDeviceAPIAdapter(PClass):
         CREATE_VOLUME_PROFILE_DROPPED(dataset_id=dataset_id,
                                       profile_name=profile_name).write()
         return self._blockdevice_api.create_volume(dataset_id=dataset_id,
-                                                   size=size)
+                                                   size=size,from_name=None)
 
 
 @implementer(IBlockDeviceAsyncAPI)
