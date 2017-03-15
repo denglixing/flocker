@@ -27,7 +27,7 @@ from ..restapi import (
     structured, EndpointResponse, BadRequest, make_bad_request,
 )
 from ..apiclient import DatasetAlreadyExists, conditional_create
-from ..node.agents.blockdevice import PROFILE_METADATA_KEY
+from ..node.agents.blockdevice import PROFILE_METADATA_KEY,FROM_KEY
 from ..common import (
     RACKSPACE_MINIMUM_VOLUME_SIZE, DEVICEMAPPER_LOOPBACK_SIZE,
     loop_until, timeout,
@@ -277,6 +277,10 @@ class VolumePlugin(object):
             metadata[u"maximum_size"] = unicode(int(size.to_Byte()))
         else:
             size = DEFAULT_SIZE
+
+        from_name = opts.get(u"from")
+        if from_name:
+             metadata[FROM_KEY] = from_name   
 
         def ensure_unique_name(configured):
             for dataset in configured:

@@ -59,7 +59,7 @@ DEFAULT_DATASET_SIZE = RACKSPACE_MINIMUM_VOLUME_SIZE
 PROFILE_METADATA_KEY = u"clusterhq:flocker:profile"
 
 # Copy from some dataset
-FROM_KEY = u"clusterhq:flocker:from"
+FROM_KEY = u"from"
 
 
 class DatasetStates(Names):
